@@ -17,7 +17,10 @@ class App extends Component {
   }
   
   handleSubmit(event) {
-    fetch('https://www.quandl.com/api/v3/datatables/WIKI/PRICES?ticker='+this.state.ticker+'&api_key=PyewNKgseooV1caGxUtG')
+    fetch('https://www.quandl.com/api/v3/datatables/WIKI/PRICES?ticker='+this.state.ticker+'&api_key=PyewNKgseooV1caGxUtG',
+      {
+        mode: 'no-cors',
+      })
       .then(
         (res) => {
           console.log(res);
