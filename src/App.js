@@ -6,8 +6,6 @@ import { DateRangePicker } from 'react-dates';
 import moment from 'moment';
 import './App.css';
 
-var ALPHA_KEY = '6L2H35SLCTWIW7IF'
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -34,11 +32,8 @@ class App extends Component {
     var yMin = this.state.yMin;
     var yMax = this.state.yMax;
     if (this.state.data.length > 0) {
-      var stopIndex = this.state.data[0]['x'].indexOf(startDate.format('YYYY-MM-DD'));
-      var startIndex = this.state.data[0]['x'].indexOf(endDate.format('YYYY-MM-DD'));
-      if (startIndex === -1) {
-        startIndex = 0
-      }
+      var startIndex = this.state.data[0]['x'].indexOf(startDate.format('YYYY-MM-DD'));
+      var stopIndex = this.state.data[0]['x'].indexOf(endDate.format('YYYY-MM-DD'));
       var dataRange = this.state.data[0]['y'].slice(startIndex, stopIndex);
       yMin = Math.min(...dataRange)-10;
       yMax = Math.max(...dataRange)+10;
@@ -52,15 +47,15 @@ class App extends Component {
   }
   
   handleSubmit(event) {
-    fetch('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&outputsize=full&symbol='+this.state.ticker+'&apikey='+ALPHA_KEY)
+    fetch('https://api.iextrading.com/1.0/stock/'+this.state.ticker+'/chart/5y')
       .then(resp => resp.json())
       .then(json => {
-        if (json['Time Series (Daily)']) {
+        if (json.length > 0) {
           console.log(json)
           this.setState({data: [
             {
-              x: Object.keys(json['Time Series (Daily)']),
-              y: Object.values(json['Time Series (Daily)']).map(obj => Number(obj['4. close']))
+              x: json.map(obj => obj.date),
+              y: json.map(obj => Number(obj.close)),
             }
           ]})
         }
