@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "create-react-class": "^15.6.3",
     "moment": "^2.22.1",
     "plotly.js": "^1.38.0",
     "react": "^16.4.0",
+    "react-16-bootstrap-date-picker": "^5.1.2",
+    "react-bootstrap": "^0.32.1",
     "react-dates": "^16.7.0",
     "react-dom": "^16.4.0",
     "react-moment": "^0.7.0",
