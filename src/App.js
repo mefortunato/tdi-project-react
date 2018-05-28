@@ -177,6 +177,7 @@ class App extends Component {
               },
             }
           }
+          config={{displayModeBar: false}}
         />
       </div>
     );
