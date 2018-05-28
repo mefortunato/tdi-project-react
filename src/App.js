@@ -31,7 +31,7 @@ class App extends Component {
     fetch('https://api.iextrading.com/1.0/ref-data/symbols')
       .then(resp => resp.json())
       .then(json => {
-        console.log(json.map(obj => obj.symbol))
+        this.setState({symbols: json.map(obj => ({name: obj.symbol}))})
       })
   }
   
