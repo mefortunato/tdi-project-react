@@ -2,10 +2,33 @@ import React, { Component } from 'react';
 import Plot from 'react-plotly.js';
 import './App.css';
 
-import { Form, FormGroup, ControlLabel, FormControl, Button  } from 'react-bootstrap';
+import Autosuggest from 'react-autosuggest';
+
+import { Form, FormGroup, ControlLabel, Button  } from 'react-bootstrap';
 var DatePicker = require("react-16-bootstrap-date-picker");
 
 class App extends Component {
+  getSuggestions(value) {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+
+    return inputLength === 0 ? [] : this.state.symbols.filter(symbol =>
+      symbol.symbol.toLowerCase().slice(0, inputLength) === inputValue
+    );
+  };
+
+  getSuggestionValue(suggestion) {
+    return suggestion.symbol;
+  }
+
+  renderSuggestion(suggestion, { query, isHighlighted }) {
+    return (
+      <div>
+        {suggestion.symbol}
+      </div>
+    );
+  }
+
   constructor(props) {
     super(props);
     var defaultEnd = new Date();
@@ -19,7 +42,9 @@ class App extends Component {
       endDate: defaultEnd.toISOString().substring(0, 10),
       yMin: 0,
       yMax: 100,
-      symbols: []
+      symbols: [],
+      suggestions: [],
+      currentSymbol: {name: '', symbol: ''}
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -31,13 +56,34 @@ class App extends Component {
     fetch('https://api.iextrading.com/1.0/ref-data/symbols')
       .then(resp => resp.json())
       .then(json => {
-        this.setState({symbols: json.map(obj => ({name: obj.symbol}))})
+        this.setState({symbols: json.map(obj => ({symbol: obj.symbol, name: obj.name}))})
       })
   }
   
-  handleChange(event) {
-    this.setState({ticker: event.target.value});
+  handleChange(event, { newValue }) {
+    var curr = this.state.currentSymbol;
+    for (var obj of this.state.symbols) {
+      if (obj.symbol === newValue) {
+        curr = obj;
+      }
+    }
+    this.setState({
+      ticker: newValue,
+      currentSymbol: curr
+    });
   }
+
+  onSuggestionsFetchRequested = ({ value }) => {
+    this.setState({
+      suggestions: this.getSuggestions(value)
+    });
+  };
+
+  onSuggestionsClearRequested = () => {
+    this.setState({
+      suggestions: []
+    });
+  };
   
   handleDateChangeStart(value, formattedValue) {
     var date = new Date(formattedValue);
@@ -116,19 +162,39 @@ class App extends Component {
     event.preventDefault();
   }
   
+  onSuggestionsFetchRequested = ({ value }) => {
+    this.setState({
+      suggestions: this.getSuggestions(value)
+    });
+  };
+ 
+  onSuggestionsClearRequested = () => {
+    this.setState({
+      suggestions: []
+    });
+  };
+  
   render() {
     return (
       <div className="App">
+        <ControlLabel>Ticker</ControlLabel>{' '}
         <Form inline onSubmit={this.handleSubmit}>
           <FormGroup>
-            <ControlLabel>Ticker</ControlLabel>{' '}
-            <FormControl type="text" placeholder="GOOG" value={this.state.ticker} onChange={this.handleChange}/>
-          </FormGroup>{' '}
-          <Button type="submit">Submit</Button>
+            <Autosuggest
+              suggestions={this.state.suggestions}
+              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+              getSuggestionValue={this.getSuggestionValue}
+              renderSuggestion={this.renderSuggestion}
+              inputProps={{placeHolder: 'GOOG', value: this.state.ticker, onChange: this.handleChange}}
+              highlightFirstSuggestion={true}
+            />
+            <Button type="submit">Submit</Button>
+          </FormGroup>
         </Form>
+        <ControlLabel style={{paddingTop: "20px"}}>Date Range</ControlLabel>{' '}
         <Form inline>
-          <FormGroup style={{display: "table-cell"}}>
-            <ControlLabel>Date Range</ControlLabel>{' '}
+          <FormGroup style={{display: "inline-table"}}>
             <DatePicker 
               id="start-datepicker"
               style={{width: "100px"}}
@@ -149,10 +215,12 @@ class App extends Component {
             />
           </FormGroup>{' '}
         </Form>
+        <div></div>
         <Plot
           data={this.state.data}
           layout={
             {
+              title: this.state.currentSymbol.symbol + " - " + this.state.currentSymbol.name,
               xaxis: {
                 title: 'Date',
                 type: 'date',
