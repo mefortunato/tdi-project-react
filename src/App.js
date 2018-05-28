@@ -127,11 +127,11 @@ class App extends Component {
           <Button type="submit">Submit</Button>
         </Form>
         <Form inline>
-          <FormGroup>
+          <FormGroup style={{display: "table-cell"}}>
             <ControlLabel>Date Range</ControlLabel>{' '}
             <DatePicker 
               id="start-datepicker"
-              style={{width: "150px"}}
+              style={{width: "100px"}}
               dateFormat="YYY-MM-DD"
               maxDate={this.state.maxDate}
               minDate={this.state.minDate}
@@ -140,7 +140,7 @@ class App extends Component {
             />
             <DatePicker
               id="end-datepicker"
-              style={{width: "150px"}}
+              style={{width: "100px"}}
               dateFormat="YYY-MM-DD"
               maxDate={this.state.maxDate}
               minDate={this.state.minDate}
