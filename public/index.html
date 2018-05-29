@@ -30,6 +30,41 @@
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
+    <div class="container">
+      
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Home</a>
+          </div>
+          <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Versions <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="http://mef-tdi-flask.herokuapp.com" target="_blank">Flask</a></li>
+                  <li><a class="dropdown-item" href="/">React</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+      
+      <div class="jumbotron jumbotron-fluid" style="background: #fff">
+        <div class="container">
+          <h1 class="display-4">Historical Stock Prices</h1>
+          <p class="lead">This is an example application built using the <a href="https://reactjs.org/" target="_blank">React</a> javascript framework. Enter a stock ticker symbol below to see historical closing prices. The data is queried from the <a href="https://iextrading.com/developer/" target="_blank">IEX Financial Data API</a>, and an interactive plot is created using <a href="https://plot.ly/" target="_blank">Plotly</a>.</p>
+          <p class="lead">An alternative version of this web app was also created using the <a href="http://flask.pocoo.org/" target="_blank">Flask</a> Python microframework and can be seen <a href="http://mef-tdi-flask.herokuapp.com" target="_blank">here</a>.</p>
+        </div>
+      </div>
+    </div>
     <div id="root"></div>
     <!--
       This HTML file is a template.
@@ -41,5 +76,10 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+  crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>
