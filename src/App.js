@@ -19,7 +19,7 @@ const News = ({news, show}) => (
     <h2>Recent News</h2>
     <ul>
       {news.map(n => (
-        <li key={n.headline}><a href="n.url" target="_blank">{n.headline}</a></li>
+        <li key={n.headline}><a href={n.url} target="_blank">{n.headline}</a></li>
       ))}
     </ul>
   </div>
