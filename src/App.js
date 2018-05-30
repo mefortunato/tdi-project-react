@@ -5,7 +5,25 @@ import './App.css';
 import Autosuggest from 'react-autosuggest';
 
 import { Form, FormGroup, ControlLabel, Button  } from 'react-bootstrap';
-var DatePicker = require("react-16-bootstrap-date-picker");
+
+import DatePicker from 'react-16-bootstrap-date-picker'
+
+const Error = ({error, show}) => (
+  <div className="alert alert-danger" role="alert" style={{width: '50%', margin: '10px auto', display: show}}>
+    {error}
+  </div>
+)
+
+const News = ({news, show}) => (
+  <div class="col-md-4 col-md-offset-4 text-left" style={{display: show}}>
+    <h2>Recent News</h2>
+    <ul>
+      {news.map(n => (
+        <li key={n.headline}><a href="n.url" target="_blank">{n.headline}</a></li>
+      ))}
+    </ul>
+  </div>
+);
 
 class App extends Component {
   getSuggestions(value) {
@@ -44,7 +62,13 @@ class App extends Component {
       yMax: 100,
       symbols: [],
       suggestions: [],
-      currentSymbol: {name: '', symbol: ''}
+      currentSymbol: {name: '', symbol: ''},
+      logo: '',
+      news: [],
+      showLogo: 'none',
+      showNews: 'none',
+      error: '',
+      showError: 'none'
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -128,36 +152,49 @@ class App extends Component {
   }
   
   handleSubmit(event) {
-    fetch('https://api.iextrading.com/1.0/stock/'+this.state.ticker+'/chart/5y')
-      .then(function(resp) {
-        if (!resp.ok) {
-            throw Error(resp.statusText);
-        }
-        return resp.json();
-      })
-      .then(json => {
-        if (json.length > 0) {
-          var dates = json.map(obj => obj.date);
-          var prices = json.map(obj => Number(obj.close))
-          this.setState({
-            data: [{
-                x: dates,
-                y: prices,
-            }],
-            startDate: dates[0],
-            endDate: dates[dates.length-1],
-            minDate: dates[0],
-            maxDate: dates[dates.length-1]
-          })
-        }
-        else {
-          alert('Cannot query '+this.state.ticker)
-          
-        }
-      })
+    Promise.all([
+      fetch('https://api.iextrading.com/1.0/stock/'+this.state.ticker+'/chart/5y'),
+      fetch('https://api.iextrading.com/1.0/stock/'+this.state.ticker+'/logo'),
+      fetch('https://api.iextrading.com/1.0/stock/'+this.state.ticker+'/news/last/5')
+    ])
+      .then((resp) => Promise.all(resp.map(res => res.json()))
+        .then(([chart, logo, news]) => {
+          console.log(news)
+          if (chart.length > 0) {
+            var dates = chart.map(obj => obj.date);
+            var prices = chart.map(obj => Number(obj.close))
+            this.setState({
+              data: [{
+                  x: dates,
+                  y: prices,
+              }],
+              startDate: dates[0],
+              endDate: dates[dates.length-1],
+              minDate: dates[0],
+              maxDate: dates[dates.length-1],
+              logo: logo.url,
+              news: news,
+              showLogo: '',
+              showNews: '',
+              showError: 'none'
+            })
+          }
+          else {
+            alert('Cannot query '+this.state.ticker)
+          }
+        })
+      )
       .catch(error => {
-        this.setState({data: []})
-        alert('Cannot query ticker: '+this.state.ticker);
+        this.setState({
+          data: [],
+          logo: '',
+          showLogo: 'none',
+          showNews: 'none',
+          news: [],
+          currentSymbol: {name: '', symbol: ''},
+          error: 'Cannot query ticker: '+this.state.ticker,
+          showError: ''
+        })
       })
     event.preventDefault();
   }
@@ -177,6 +214,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <Error error={this.state.error} show={this.state.showError}/>
         <ControlLabel>Ticker</ControlLabel>{' '}
         <Form inline onSubmit={this.handleSubmit}>
           <FormGroup>
@@ -186,7 +224,7 @@ class App extends Component {
               onSuggestionsClearRequested={this.onSuggestionsClearRequested}
               getSuggestionValue={this.getSuggestionValue}
               renderSuggestion={this.renderSuggestion}
-              inputProps={{placeHolder: 'GOOG', value: this.state.ticker, onChange: this.handleChange}}
+              inputProps={{placeholder: 'GOOG', value: this.state.ticker, onChange: this.handleChange}}
               highlightFirstSuggestion={true}
             />
             <Button type="submit">Submit</Button>
@@ -215,12 +253,24 @@ class App extends Component {
             />
           </FormGroup>{' '}
         </Form>
-        <div></div>
+        <div style={{'marginTop': '15px', 'display': this.state.showLogo}}>
+          <img src={this.state.logo} alt="Company Logo"/>
+        </div>
         <Plot
+          className="d-flex justify-content-center"
           data={this.state.data}
+          style={{width: '75%', margin: '0 auto'}}
+          useResizeHandler={true}
           layout={
             {
-              title: this.state.currentSymbol.symbol + " - " + this.state.currentSymbol.name,
+              title: this.state.currentSymbol.name,
+              margin: {
+                l: 100,
+                r: 100,
+                t: 50,
+                b: 50,
+                pad: 4
+              },
               xaxis: {
                 title: 'Date',
                 type: 'date',
@@ -247,6 +297,7 @@ class App extends Component {
           }
           config={{displayModeBar: false}}
         />
+        <News news={this.state.news} show={this.state.showNews}/>
       </div>
     );
   }
