@@ -1,18 +1,14 @@
-.App {
-  text-align: center;
-}
-
 .onTop {
   z-index: 999
 }
 
 .react-autosuggest__container {
-  position: relative;
+  position: absolute;
+  margin-bottom: 25px;
 }
 
 .react-autosuggest__input {
   width: 240px;
-  height: 30px;
   padding: 10px 20px;
   font-family: Helvetica, sans-serif;
   font-weight: 300;
@@ -36,9 +32,9 @@
 
 .react-autosuggest__suggestions-container--open {
   display: block;
-  position: relative;
+  position: absolute;
   margin: 0 auto;
-  width: 280px;
+  width: 240px;
   border: 1px solid #aaa;
   background-color: #fff;
   font-family: Helvetica, sans-serif;
